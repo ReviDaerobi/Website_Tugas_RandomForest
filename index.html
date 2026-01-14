@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Analisis Random Forest - Diabetes</title>
+
+    <!-- Mengambil Style Reveal.js dari CDN (Internet) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <!-- Tema Slide: League (Modern & Gelap) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/league.min.css">
+
+    <!-- Style untuk Code Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/monokai.min.css">
+
+    <style>
+        .container {
+            display: flex;
+        }
+        .col {
+            flex: 1;
+            padding: 10px;
+        }
+        table {
+            font-size: 0.5em !important;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #fff;
+            padding: 5px;
+            text-align: center;
+        }
+        th {
+            background-color: #2a76dd;
+        }
+        .small-text {
+            font-size: 0.6em;
+        }
+        .highlight-text {
+            color: #42affa;
+            font-weight: bold;
+        }
+        .imp-box {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- SLIDE 1: JUDUL -->
+            <section>
+                <h2>Analisis Prediksi Diabetes</h2>
+                <h3>Menggunakan Algoritma Random Forest</h3>
+                <p>Replikasi Studi Kasus: Pima Indians Diabetes Database</p>
+                <br>
+                <p class="small-text">Disusun Oleh:</p>
+                <p>1. Muhamad Revi Daerobi (065124039)</p>
+                <p>2. Raihan Aldolio (065124001)</p>
+                <p>3. Rengga Harlan Fauzan (06512402)</p>
+                
+            </section>
+
+            <!-- SLIDE 2: LATAR BELAKANG -->
+            <section>
+                <h3>Latar Belakang</h3>
+                <ul>
+                    <li class="fragment">Diabetes adalah penyakit kronis yang sering terlambat dideteksi.</li>
+                    <li class="fragment">Diperlukan metode <b>Machine Learning</b> untuk membantu diagnosis medis secara cepat.</li>
+                    <li class="fragment"><b>Referensi Penelitian (SINTA 2):</b><br>
+                        <span class="small-text">"Peningkatan Hasil Klasifikasi pada Algoritma Random Forest untuk Deteksi Pasien Penderita Diabetes..." - <i>Jurnal RESTI Vol. 5 No. 1 (2021)</i>.</span>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- SLIDE 3: DATASET -->
+            <section>
+                <h3>Sumber Data</h3>
+                <p><b>Pima Indians Diabetes Database</b></p>
+                <div class="container">
+                    <div class="col">
+                        <div class="imp-box">
+                            <h4>768</h4>
+                            <p class="small-text">Total Data Raw</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="imp-box">
+                            <h4>8</h4>
+                            <p class="small-text">Fitur (Variabel)</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="imp-box">
+                            <h4>2 Kelas</h4>
+                            <p class="small-text">0 (Sehat) & 1 (Diabetes)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: SAMPEL DATA -->
+            <section>
+                <h4>Sampel Data Acak (30 Data)</h4>
+                <p class="small-text">Berikut adalah contoh sebagian data yang diambil secara acak untuk analisis:</p>
+                <!-- Tabel Simulasi Data -->
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pregnancies</th>
+                            <th>Glucose</th>
+                            <th>BloodPressure</th>
+                            <th>BMI</th>
+                            <th>Age</th>
+                            <th>Outcome</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>6</td><td>148</td><td>72</td><td>33.6</td><td>50</td><td>1</td></tr>
+                        <tr><td>1</td><td>85</td><td>66</td><td>26.6</td><td>31</td><td>0</td></tr>
+                        <tr><td>8</td><td>183</td><td>64</td><td>23.3</td><td>32</td><td>1</td></tr>
+                        <tr><td>1</td><td>89</td><td>66</td><td>28.1</td><td>21</td><td>0</td></tr>
+                        <tr><td>0</td><td>137</td><td>40</td><td>43.1</td><td>33</td><td>1</td></tr>
+                        <tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+                    </tbody>
+                </table>
+                <p class="small-text"><i>*Tabel dipersingkat untuk tampilan slide</i></p>
+            </section>
+
+            <!-- SLIDE 5: PENJELASAN VARIABEL -->
+            <section>
+                <h3>Apa Arti Data Tersebut?</h3>
+                <div style="font-size: 0.7em; text-align: left;">
+                    <p><span class="highlight-text">Glucose:</span> Kadar gula dalam darah (Indikator Utama).</p>
+                    <p><span class="highlight-text">BMI:</span> Indeks Massa Tubuh (Mengukur obesitas).</p>
+                    <p><span class="highlight-text">BloodPressure:</span> Tekanan darah diastolik (mm Hg).</p>
+                    <p><span class="highlight-text">Age:</span> Umur pasien.</p>
+                    <p><span class="highlight-text">Outcome:</span> Target Prediksi (0 = Sehat, 1 = Diabetes).</p>
+                </div>
+            </section>
+
+            <!-- SLIDE 6: METODE -->
+            <section>
+                <h3>Metode: Random Forest</h3>
+                <p>Konsep: <b>"Ensemble Learning"</b></p>
+                <div class="r-stack">
+                    <img class="fragment" src="/randomforest.webp" alt="Random Forest Diagram" style="background:white; padding:10px; border-radius:10px;">
+                </div>
+                <p class="fragment small-text">Menggunakan 100 "Pohon Keputusan" (Trees) yang melakukan voting untuk menentukan hasil akhir. Lebih akurat daripada memprediksi dengan satu pohon saja.</p>
+            </section>
+
+            <!-- SLIDE 7: IMPLEMENTASI CODE -->
+            <section>
+                <h3>Implementasi Python</h3>
+                <pre><code class="python" data-trim data-noescape>
+# Membagi Data Latih (80%) dan Uji (20%)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# Membangun Model Random Forest (100 Pohon)
+rf_model = RandomForestClassifier(n_estimators=100)
+
+# Melatih Model
+rf_model.fit(X_train, y_train)
+
+# Melakukan Prediksi
+y_pred = rf_model.predict(X_test)
+                </code></pre>
+            </section>
+
+            <!-- SLIDE 8: HASIL EVALUASI -->
+            <section>
+                <h3>Hasil Evaluasi Model</h3>
+                <div class="container">
+                    <div class="col" style="text-align: left; font-size: 0.8em;">
+                        <p><b>Akurasi: 76% (Contoh)</b></p>
+                        <p>Model berhasil memprediksi status kesehatan 76 dari 100 pasien dengan benar.</p>
+                        
+                        <p><b>Precision (Kelas 1):</b> Seberapa akurat saat menebak Diabetes.</p>
+                        <p><b>Recall (Kelas 1):</b> Seberapa banyak pasien Diabetes asli yang tertangkap.</p>
+                    </div>
+                    <div class="col">
+                        <pre style="font-size: 0.45em;"><code class="text">
+              precision    recall  f1-score   support
+
+           0       0.81      0.80      0.80        99
+           1       0.65      0.67      0.66        55
+
+    accuracy                           0.76       154
+                        </code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 9: FEATURE IMPORTANCE -->
+            <section>
+                <h3>Faktor Paling Berpengaruh</h3>
+                <p>Berdasarkan analisis algoritma, berikut adalah variabel penentu utama:</p>
+                <ol>
+                    <li class="fragment"><span class="highlight-text">Glucose (Gula Darah)</span> - Paling Dominan.</li>
+                    <li class="fragment"><span class="highlight-text">BMI (Obesitas)</span> - Faktor kedua.</li>
+                    <li class="fragment">Age (Umur) - Faktor ketiga.</li>
+                </ol>
+                <div class="imp-box fragment">
+                    <p><i>Insight: Menjaga kadar gula dan berat badan adalah kunci pencegahan diabetes.</i></p>
+                </div>
+            </section>
+
+            <!-- SLIDE 10: KESIMPULAN -->
+            <section>
+                <h3>Kesimpulan</h3>
+                <ul>
+                    <li class="fragment">Algoritma Random Forest <b>efektif</b> digunakan untuk klasifikasi penyakit diabetes.</li>
+                    <li class="fragment">Penggunaan 100 pohon keputusan memberikan hasil prediksi yang stabil.</li>
+                    <li class="fragment">Analisis ini membuktikan validitas paper referensi pada Jurnal Sinta 2 yang dijadikan rujukan.</li>
+                </ul>
+                <br><br>
+                <h4>Terima Kasih</h4>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Script Reveal.js dari CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/highlight/highlight.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: true,
+            transition: 'convex', // Opsi: none/fade/slide/convex/concave/zoom
+            plugins: [ RevealHighlight ]
+        });
+    </script>
+</body>
+</html>
