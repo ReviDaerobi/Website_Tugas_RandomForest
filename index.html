@@ -49,6 +49,13 @@
             border-radius: 10px;
             margin-top: 20px;
         }
+        .math-box {
+            border: 1px dashed #42affa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: rgba(66, 175, 250, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -65,8 +72,6 @@
                 <p>1. Raihan Aldolio (065124001)</p>
                 <p>2. Rengga Harlan Fauzan (065124026)</p>
                 <p>3. Muhamad Revi Daerobi (065124039)</p>
-                
-                
             </section>
 
             <!-- SLIDE 2: LATAR BELAKANG -->
@@ -152,7 +157,7 @@
                 <h3>Metode: Random Forest</h3>
                 <p>Konsep: <b>"Ensemble Learning"</b></p>
                 <div class="r-stack">
-                    <img class="fragment" src="/randomforest.webp" alt="Random Forest Diagram" style="background:white; padding:10px; border-radius:10px;">
+                    <img class="fragment" src="https://upload.wikimedia.org/wikipedia/commons/7/76/Random_forest_diagram_complete.png" alt="Random Forest Diagram" style="background:white; padding:10px; border-radius:10px;">
                 </div>
                 <p class="fragment small-text">Menggunakan 100 "Pohon Keputusan" (Trees) yang melakukan voting untuk menentukan hasil akhir. Lebih akurat daripada memprediksi dengan satu pohon saja.</p>
             </section>
@@ -180,26 +185,97 @@ y_pred = rf_model.predict(X_test)
                 <h3>Hasil Evaluasi Model</h3>
                 <div class="container">
                     <div class="col" style="text-align: left; font-size: 0.8em;">
-                        <p><b>Akurasi: 76% (Contoh)</b></p>
-                        <p>Model berhasil memprediksi status kesehatan 76 dari 100 pasien dengan benar.</p>
-                        
-                        <p><b>Precision (Kelas 1):</b> Seberapa akurat saat menebak Diabetes.</p>
-                        <p><b>Recall (Kelas 1):</b> Seberapa banyak pasien Diabetes asli yang tertangkap.</p>
+                        <p><b>Akurasi: 79%</b></p>
+                        <p>Dari 154 Data Uji, model menebak benar sebanyak 122 data.</p>
+                        <br>
+                        <p><b>Precision (Kelas 1):</b> 0.72 (72%)</p>
+                        <p><b>Recall (Kelas 1):</b> 0.67 (67%)</p>
                     </div>
                     <div class="col">
                         <pre style="font-size: 0.45em;"><code class="text">
               precision    recall  f1-score   support
 
-           0       0.81      0.80      0.80        99
-           1       0.65      0.67      0.66        55
+           0       0.86      0.86      0.86        99
+           1       0.72      0.67      0.70        55
 
-    accuracy                           0.76       154
+    accuracy                           0.79       154
                         </code></pre>
                     </div>
                 </div>
+                <p class="small-text"><i>*Dari mana angka ini berasal? Lihat slide selanjutnya.</i></p>
             </section>
 
-            <!-- SLIDE 9: FEATURE IMPORTANCE -->
+            <!-- SLIDE 9: CONFUSION MATRIX (SUMBER DATA) -->
+            <section>
+                <h3>1. Bedah Perhitungan: Confusion Matrix</h3>
+                <p class="small-text">Tabel perbandingan Tebakan Komputer vs Fakta Asli:</p>
+                <table style="font-size: 0.8em !important;">
+                    <thead>
+                        <tr>
+                            <th style="background:transparent; border:none;"></th>
+                            <th>Tebakan: SEHAT (0)</th>
+                            <th>Tebakan: SAKIT (1)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>Fakta: SEHAT (0)</b></td>
+                            <td style="background: green;"><b>85</b> (Benar)</td>
+                            <td style="background: red;"><b>14</b> (Salah Tuduh)</td>
+                        </tr>
+                        <tr>
+                            <td><b>Fakta: SAKIT (1)</b></td>
+                            <td style="background: red;"><b>18</b> (Lolos)</td>
+                            <td style="background: green;"><b>37</b> (Benar)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="small-text">Total Data Uji: 85 + 14 + 18 + 37 = <b>154 Data</b></p>
+            </section>
+
+            <!-- SLIDE 10: PERHITUNGAN PRECISION -->
+            <section>
+                <h3>2. Menghitung Precision</h3>
+                <p class="small-text">"Seberapa akurat saat komputer memvonis Sakit?"</p>
+                
+                <div class="math-box">
+                    <p>Rumus = Tebakan Benar Sakit / Total Tuduhan Sakit</p>
+                    <p style="font-size: 1.2em;">= 37 / (37 + 14)</p>
+                    <p style="font-size: 1.2em;">= 37 / 51</p>
+                    <p style="font-size: 1.5em; font-weight:bold;">= 0.72 (72%)</p>
+                </div>
+                <p class="small-text">Artinya: Saat model bilang "Diabetes", kemungkinannya 72% benar.</p>
+            </section>
+
+            <!-- SLIDE 11: PERHITUNGAN RECALL -->
+            <section>
+                <h3>3. Menghitung Recall</h3>
+                <p class="small-text">"Seberapa banyak pasien Sakit yang berhasil ditemukan?"</p>
+                
+                <div class="math-box">
+                    <p>Rumus = Tebakan Benar Sakit / Total Orang Sakit Asli</p>
+                    <p style="font-size: 1.2em;">= 37 / (37 + 18)</p>
+                    <p style="font-size: 1.2em;">= 37 / 55</p>
+                    <p style="font-size: 1.5em; font-weight:bold;">= 0.67 (67%)</p>
+                </div>
+                <p class="small-text">Artinya: Model berhasil mendeteksi 67% dari total penderita.</p>
+            </section>
+
+             <!-- SLIDE 12: PERHITUNGAN AKURASI -->
+             <section>
+                <h3>4. Menghitung Akurasi</h3>
+                <p class="small-text">"Berapa total tebakan yang benar secara keseluruhan?"</p>
+                
+                <div class="math-box">
+                    <p>Rumus = (Benar Sehat + Benar Sakit) / Total Data</p>
+                    <p style="font-size: 1.2em;">= (85 + 37) / 154</p>
+                    <p style="font-size: 1.2em;">= 122 / 154</p>
+                    <p style="font-size: 1.5em; font-weight:bold;">= 0.79 (79%)</p>
+                </div>
+                <p class="small-text">Artinya: Secara umum, nilai ujian model ini adalah 79.</p>
+            </section>
+
+            <!-- SLIDE 13: FEATURE IMPORTANCE -->
             <section>
                 <h3>Faktor Paling Berpengaruh</h3>
                 <p>Berdasarkan analisis algoritma, berikut adalah variabel penentu utama:</p>
@@ -213,7 +289,7 @@ y_pred = rf_model.predict(X_test)
                 </div>
             </section>
 
-            <!-- SLIDE 10: KESIMPULAN -->
+            <!-- SLIDE 14: KESIMPULAN -->
             <section>
                 <h3>Kesimpulan</h3>
                 <ul>
@@ -242,5 +318,4 @@ y_pred = rf_model.predict(X_test)
         });
     </script>
 </body>
-
 </html>
